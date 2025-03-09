@@ -26,7 +26,7 @@ import {
 import ShareModal from "./ShareModal";
 import VersionHistoryModal from "./VersionHistory";
 import AppContext from "@utils/appContext";
-import { modules } from "@lib/quillConfig";
+import modules  from "@lib/quillConfig";
 import { SHARE_PERMISSIONS } from "@utils/constent";
 // Import Quill dynamically to avoid SSR issues
 // const ReactQuill = dynamic(() => import('react-quill'), {
