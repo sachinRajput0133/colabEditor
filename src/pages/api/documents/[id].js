@@ -1,9 +1,10 @@
-import { getSession } from 'next-auth/react';
 import dbConnect from '@lib/db';
 import Document from '@models/Document';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../auth/[...nextauth]';
 
 export default async function handler(req, res) {
-  const session = await getSession({ req });
+   const session = await getServerSession(req, res, authOptions);
   
   if (!session) {
     return res.status(401).json({ error: 'Not authenticated' });
@@ -11,7 +12,7 @@ export default async function handler(req, res) {
   
   await dbConnect();
   
-  const { id } = req.query;
+  const {id } = req.query;
   
   // Handle different HTTP methods
   switch (req.method) {
@@ -22,6 +23,9 @@ export default async function handler(req, res) {
     case 'PATCH':
       return updateDocumentPartial(req, res, session, id);
     case 'DELETE':
+      case 'POST':
+        return updateDocumentPartial(req, res, session, id);
+      case 'DELETE':
       return deleteDocument(req, res, session, id);
     default:
       res.setHeader('Allow', ['GET', 'PUT', 'PATCH', 'DELETE']);

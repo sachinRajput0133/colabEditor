@@ -46,6 +46,7 @@ const ShareModal = ({ documentId, onClose }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
         },
         body: JSON.stringify({ email, permission }),
       });
@@ -69,16 +70,17 @@ const ShareModal = ({ documentId, onClose }) => {
   // Handle changing a collaborator's permission
   const handlePermissionChange = async (collaboratorId, newPermission) => {
     try {
-      const res = await fetch(`/api/documents/${documentId}/collaborators/${collaboratorId}`, {
+      const res = await fetch(`/api/documents/${documentId}/collaborators/`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ permission: newPermission }),
+        body: JSON.stringify({ permission: newPermission ,collaboratorId}),
       });
       
       if (res.ok) {
         const data = await res.json();
+        console.log("🚀 ~ handlePermissionChange ~ data:", data)
         setCollaborators(data.collaborators);
       }
     } catch (error) {
@@ -177,7 +179,7 @@ const ShareModal = ({ documentId, onClose }) => {
           <button
             type="submit"
             disabled={loading || !email}
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+            className="w-full bg-blue-600  py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
           >
             {loading ? 'Adding...' : 'Add'}
           </button>

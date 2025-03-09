@@ -27,6 +27,7 @@ import ShareModal from "./ShareModal";
 import VersionHistoryModal from "./VersionHistory";
 import AppContext from "@utils/appContext";
 import { modules } from "@lib/quillConfig";
+import { SHARE_PERMISSIONS } from "@utils/constent";
 // Import Quill dynamically to avoid SSR issues
 // const ReactQuill = dynamic(() => import('react-quill'), {
 //   ssr: false,
@@ -63,6 +64,7 @@ const CURSOR_COLORS = [
 ];
 
 const DocumentEditor = ({ documentId, initialDocument }) => {
+  console.log("🚀 ~ DocumentEditor ~ initialDocument:", initialDocument);
   const { data: session } = useSession();
   const router = useRouter();
   const [content, setContent] = useState(
@@ -85,8 +87,29 @@ const DocumentEditor = ({ documentId, initialDocument }) => {
   useEffect(() => {
     if (session && initialDocument) {
       // Admin can edit any document
+      console.log("🚀 ~ useEffect ~ session.user:", session.user);
+      console.log("🚀 ~ useEffect ~ initialDocument:", initialDocument);
+      console.log("vsession.user.id", session.user.id);
+      const findDocCollabPermission = initialDocument?.collaborators?.find(
+        (user) => user.user._id == session.user.id
+      );
+      console.log(
+        "🚀 ~ useEffect ~ findDocCollabPermission:",
+        findDocCollabPermission
+      );
       if (session.user.role === "admin" || session.user.role === "editor") {
-        setCanEdit(true);
+        // if(initialDocument.collaborators?.find((user)=>user._id === session.user.id )){
+        if (
+          initialDocument?.collaborators?.length > 1 && findDocCollabPermission?.permission == SHARE_PERMISSIONS.owner ||
+          findDocCollabPermission?.permission == SHARE_PERMISSIONS.canEdit
+        ) {
+          setCanEdit(true);
+        }
+        if(initialDocument?.collaborators?.length == 1){
+          setCanEdit(true);
+        }
+        // }
+        // setCanEdit(true);
         return;
       } else {
         setCanEdit(false);
@@ -144,7 +167,7 @@ const DocumentEditor = ({ documentId, initialDocument }) => {
 
       // Load document content
       socket.on("load-document", (docContent) => {
-        console.log("🚀 ~ socket.on ~ docContent:", docContent)
+        console.log("🚀 ~ socket.on ~ docContent:", docContent);
         console.log("load dcocument");
         setContent(docContent);
         // if (editorRef.current) {
@@ -393,9 +416,9 @@ const DocumentEditor = ({ documentId, initialDocument }) => {
   const handleManualSave = useCallback(() => {
     if (socket && session?.user) {
       const content = editorRef.current.getContents();
-      console.log("🚀 ~ handleManualSave ~ content:", content)
+      console.log("🚀 ~ handleManualSave ~ content:", content);
       setIsSaving(true);
-      saveDocument(documentId, content, session.user.id,socket);
+      saveDocument(documentId, content, session.user.id, socket);
     }
   }, []);
   // const handleManualSave = useCallback(() => {
@@ -410,7 +433,7 @@ const DocumentEditor = ({ documentId, initialDocument }) => {
   //         contentToSave = content;
   //         console.warn("Using state content as fallback - editor reference not available");
   //       }
-        
+
   //       console.log("🚀 ~ handleManualSave ~ contentToSave:", contentToSave);
   //       setIsSaving(true);
   //       saveDocument(documentId, contentToSave, session.user.id, socket);
@@ -422,14 +445,14 @@ const DocumentEditor = ({ documentId, initialDocument }) => {
 
   const hendlePrevVersion = () => {
     if (socket) {
-      console.log("🚀 ~ hhendlePrevVersion", );
-      getPreviousNextVerionDoc(documentId,true,socket);
+      console.log("🚀 ~ hhendlePrevVersion");
+      getPreviousNextVerionDoc(documentId, true, socket);
     }
   };
   const hendleNext = () => {
     if (socket) {
-      console.log("🚀 ~ hhendlePrevVersion", );
-      getPreviousNextVerionDoc(documentId,false,socket);
+      console.log("🚀 ~ hhendlePrevVersion");
+      getPreviousNextVerionDoc(documentId, false, socket);
     }
   };
   return (
@@ -520,11 +543,11 @@ const DocumentEditor = ({ documentId, initialDocument }) => {
 
       {/* Editor */}
       <div className="flex-grow relative">
-        {!canEdit && (
-          <div className="absolute top-0 left-0 right-0 bg-yellow-100 text-yellow-800 px-4 py-2 text-sm">
+        {/* {!canEdit && (
+          <div className="absolute top-8 left-0 right-0 bg-yellow-100 text-yellow-800 px-4 py-2 text-sm">
             You have read-only access to this document.
           </div>
-        )}
+        )} */}
 
         <ReactQuill
           ref={quillRef}
@@ -550,10 +573,15 @@ const DocumentEditor = ({ documentId, initialDocument }) => {
           documentId={documentId}
           onClose={() => setShowVersionHistory(false)}
           onRestore={(version) => {
-            if ( canEdit) {
+            if (canEdit) {
               // editorRef.current.setContents(version.content);
               setIsSaving(true);
-              saveDocument(documentId, version.content, session.user.id,socket);
+              saveDocument(
+                documentId,
+                version.content,
+                session.user.id,
+                socket
+              );
             }
           }}
         />

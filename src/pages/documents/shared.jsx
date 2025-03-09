@@ -30,6 +30,7 @@ export async function getServerSideProps(context) {
     }
     
     const sharedDocuments = await response.json();
+    console.log("🚀 ~ getServerSideProps ~ sharedDocuments:", sharedDocuments)
     
     return {
       props: {

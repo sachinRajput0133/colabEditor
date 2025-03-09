@@ -16,6 +16,7 @@ export default async function handler(req, res) {
   await dbConnect();
   
   const { id } = req.query;
+  console.log("🚀 ~ handler ~ id:", id)
   
   // Handle different HTTP methods
   switch (req.method) {
