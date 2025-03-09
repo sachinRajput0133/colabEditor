@@ -1,7 +1,7 @@
 import { getSession } from 'next-auth/react';
 import crypto from 'crypto';
-import dbConnect from '../../../../lib/db';
-import Document from '../../../../models/Document';
+import dbConnect from '@lib/db';
+import Document from '@models/Document';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../auth/[...nextauth]';
 

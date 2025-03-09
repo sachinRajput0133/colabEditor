@@ -1,6 +1,6 @@
 import { getSession } from 'next-auth/react';
-import dbConnect from '../../../../lib/db';
-import Document from '../../../../models/Document';
+import dbConnect from '@lib/db';
+import Document from '@models/Document';
 
 export default async function handler(req, res) {
   const session = await getSession({ req });

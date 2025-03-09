@@ -1,6 +1,6 @@
 import { getSession } from 'next-auth/react';
-import dbConnect from '../../../../lib/db';
-import Folder from '../../../../models/Folder';
+import dbConnect from '@lib/db';
+import Folder from '@models/Folder';
 import { authOptions } from '../auth/[...nextauth]';
 import { getServerSession } from 'next-auth';
 
@@ -16,7 +16,7 @@ export default async function handler(req, res) {
   // Handle different HTTP methods
   switch (req.method) {
     case 'GET':
-      return getFolders(req, res, session);
+      return getFoldersDetail(req, res, session);
     case 'POST':
       return createFolder(req, res, session);
     default:
@@ -26,25 +26,16 @@ export default async function handler(req, res) {
 }
 
 // Get folders
-async function getFolders(req, res, session) {
+async function getFoldersDetail(req, res, session) {
   try {
-    const { parent } = req.query;
+    const { id } = req.query;
+    console.log("🚀 ~ getFoldersDetail ~ id:", id)
     
     let query = { isDeleted: false };
+     query["_id"]= id
+   
     
-    // Filter by parent folder if provided
-    if (parent !== undefined) {
-      query.parent = parent === 'null' || parent === '' ? null : parent;
-    }
-    
-    // If not admin, only show user's folders
-    if (session.user.role !== 'admin') {
-      query.owner = session.user.id;
-    }
-    
-    const folders = await Folder.find(query)
-    .populate('owner', 'name email')
-    .sort({ createdAt: 1 });
+    const folders = await Folder.findOne(query)
     console.log("🚀 ~ getFolders ~ folders:", folders)
     
     return res.status(200).json(folders);

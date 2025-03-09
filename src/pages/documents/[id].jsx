@@ -23,6 +23,7 @@ export async function getServerSideProps(context) {
   }
   
   const { id } = context.params;
+  console.log("🚀 ~ getServerSideProps ~ id:", id)
   
   // Fetch document data
   const serverUrl = process.env.NEXTAUTH_URL || `https://${context.req.headers.host}`;

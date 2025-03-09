@@ -1,6 +1,6 @@
 import { getSession } from 'next-auth/react';
-import dbConnect from '../../../../lib/db';
-import Folder from '../../../../models/Folder';
+import dbConnect from '@lib/db';
+import Folder from '@models/Folder';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]';
 

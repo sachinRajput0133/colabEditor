@@ -39,11 +39,11 @@ const VersionHistory = ({ documentId, onClose, onRestore }) => {
   };
 
   // Handle restoring a version
-  const handleRestore = () => {
-    if (selectedVersion) {
-      onRestore(selectedVersion);
+  const handleRestore = (version) => {
+    // if (selectedVersion) {
+      onRestore(version);
       onClose();
-    }
+    // }
   };
 
   // Get preview text from Quill delta
@@ -136,8 +136,8 @@ const VersionHistory = ({ documentId, onClose, onRestore }) => {
                   
                   <div className="mt-4 flex justify-end">
                     <button
-                      onClick={handleRestore}
-                      className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                      onClick={()=>handleRestore(selectedVersion)}
+                      className="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700"
                     >
                       Restore this version
                     </button>

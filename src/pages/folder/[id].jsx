@@ -32,6 +32,7 @@ export async function getServerSideProps(context) {
     // Fetch folder details
     const folderRes = await axiosInstance.get(`/api/folders/${id}`);
 
+    console.log("🚀 ~ getServerSideProps ~ folderRes:", folderRes)
     // Fetch documents and subfolders in this folder
     const [documentsRes, foldersRes] = await Promise.all([
       axiosInstance.get(`/api/documents?folderId=${id}`),
@@ -79,6 +80,7 @@ const FolderPage = ({ folder, documents, folders, error, errorMessage }) => {
       <h1 className="text-2xl font-bold mb-6">{folder.name}</h1>
       
       <DocumentList
+         folder={folder}
         documents={documents}
         folders={folders}
         currentFolder={router?.query?.id}

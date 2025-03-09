@@ -1,10 +1,11 @@
 // components/editor/DocumentEditor.jsx
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useContext } from 'react';
 import { useSession } from 'next-auth/react';
 import dynamic from 'next/dynamic';
-import { initSocket, joinDocument, updateCursor, sendTextChange, saveDocument } from '../../lib/socket';
+import { initSocket, joinDocument, updateCursor, sendTextChange, saveDocument, leaveDocument } from '../../lib/socket';
 import debounce from 'lodash/debounce';
 import 'quill/dist/quill.snow.css';
+import AppContext from '@utils/appContext';
 
 // Dynamically import Quill (no SSR)
 const QuillEditor = dynamic(
@@ -20,7 +21,9 @@ const CURSOR_COLORS = ['#F44336', '#2196F3', '#4CAF50', '#FFC107', '#9C27B0', '#
 
 const DocumentEditor = ({ documentId, initialDocument }) => {
   const { data: session } = useSession();
-  const [socket, setSocket] = useState(null);
+  const {socket} = useContext(AppContext)
+  console.log("🚀 ~ DocumentEditor ~ socket:", socket)
+  // const [socket, setSocket] = useState(null);
   const [quill, setQuill] = useState(null);
   const [cursors, setCursors] = useState(null);
   const [content, setContent] = useState(initialDocument?.content || { ops: [] });
@@ -28,26 +31,27 @@ const DocumentEditor = ({ documentId, initialDocument }) => {
   const [activeUsers, setActiveUsers] = useState([]);
   
   // Initialize socket connection
-  useEffect(() => {
-    const setupSocket = async () => {
-      const socketInstance = await initSocket();
-      setSocket(socketInstance);
+  // useEffect(() => {
+  //   const setupSocket = async () => {
+  //     const socketInstance = await initSocket();
+  //     setSocket(socketInstance);
       
-      return () => {
-        socketInstance.disconnect();
-      };
-    };
+  //     return () => {
+  //       socketInstance.disconnect();
+  //     };
+  //   };
     
-    setupSocket();
-  }, []);
+  //   setupSocket();
+  // }, []);
   
   // Join document room when socket is ready
   useEffect(() => {
     if (socket && session?.user && documentId) {
-      joinDocument(documentId, session.user.id);
+      joinDocument(documentId, session.user.id,session.user.name,socket);
       
       // Socket event listeners
       socket.on('receive-changes', ({ delta, userId }) => {
+        console.log("recieverrrrr")
         if (quill && userId !== session.user.id) {
           quill.updateContents(delta);
         }
@@ -77,12 +81,16 @@ const DocumentEditor = ({ documentId, initialDocument }) => {
       });
       
       return () => {
+        if(socket && documentId){
+          leaveDocument(documentId, session?.user?.id, session?.user?.name);
+        }
         socket.off('receive-changes');
         socket.off('cursor-update');
         socket.off('user-joined');
         socket.off('document-saved');
       };
     }
+      console.log("🚀 ~ useEffect ~ socket:", socket)
   }, [socket, session, documentId, quill, cursors, activeUsers]);
   
   // Initialize Quill editor when component mounts

@@ -101,7 +101,7 @@ export default function Home({ initialDocuments, initialFolders }) {
           <h1 className="text-3xl font-bold mb-4">Collaborative Document Editor</h1>
           <p className="mb-6">Please sign in to access your documents</p>
           <Link href="/auth/signin">
-            <a className="px-4 py-2 bg-blue-600 rounded">Sign In</a>
+            <h2 className="px-4 py-2 bg-blue-600 rounded">Sign In</h2>
           </Link>
         </div>
       </div>
@@ -151,7 +151,7 @@ export default function Home({ initialDocuments, initialFolders }) {
       )}
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {folders.map(folder => (
+        {folders?.map(folder => (
           <div
             key={folder._id}
             className="p-4 border rounded cursor-pointer hover:bg-gray-50"
@@ -164,9 +164,8 @@ export default function Home({ initialDocuments, initialFolders }) {
           </div>
         ))}
         
-        {documents.map(document => (
+        {documents?.map(document => (
           <Link key={document._id} href={`/documents/${document._id}`}>
-            <a className="p-4 border rounded hover:bg-gray-50">
               <div className="flex justify-between items-start">
                 <div>
                   <div className="flex items-center space-x-2">
@@ -178,7 +177,6 @@ export default function Home({ initialDocuments, initialFolders }) {
                   </p>
                 </div>
               </div>
-            </a>
           </Link>
         ))}
       </div>

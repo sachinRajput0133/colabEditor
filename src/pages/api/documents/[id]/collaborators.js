@@ -1,7 +1,7 @@
 import { getSession } from 'next-auth/react';
-import dbConnect from '../../../../lib/db';
-import Document from '../../../../models/Document';
-import User from '../../../../models/User';
+import dbConnect from '@lib/db';
+import Document from '@models/Document';
+import User from '@models/User';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../auth/[...nextauth]';
 

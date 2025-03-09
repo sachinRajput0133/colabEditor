@@ -6,7 +6,7 @@ import { format } from 'date-fns';
 import CreateDocumentModal from './CreateDocumentModal';
 import CreateFolderModal from './CreateFolderModal';
 
-const DocumentList = ({ documents, folders, currentFolder }) => {
+const DocumentList = ({ documents, folders, currentFolder ,folder}) => {
   const { data: session } = useSession();
   const router = useRouter();
   const [showCreateDoc, setShowCreateDoc] = useState(false);
@@ -19,9 +19,7 @@ const DocumentList = ({ documents, folders, currentFolder }) => {
     doc.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
   
-  // const filteredFolders = folders.filter(folder => 
-  //   folder.name.toLowerCase().includes(searchQuery.toLowerCase())
-  // );
+
   const filteredFolders = folders.filter(folder => 
     folder.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -143,7 +141,7 @@ const DocumentList = ({ documents, folders, currentFolder }) => {
             {currentFolder && (
               <>
                 <span>/</span>
-                <span className="text-gray-700">Current Folder</span>
+                <span className="text-gray-700">{folder?.name}</span>
               </>
             )}
           </div>
@@ -156,7 +154,7 @@ const DocumentList = ({ documents, folders, currentFolder }) => {
           <div className="relative">
             <input
               type="text"
-              placeholder="Search documents"
+              placeholder="Search Folder/Documents"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -236,8 +234,8 @@ const DocumentList = ({ documents, folders, currentFolder }) => {
                     ? 'border-blue-500 bg-blue-50'
                     : ''
                 }`}
-                onClick={() => toggleItemSelection(folder._id, 'folder')}
-                onDoubleClick={() => router.push(`/folder/${folder._id}`)}
+                // onClick={() => toggleItemSelection(folder._id, 'folder')}
+                onClick={() => router.push(`/folder/${folder._id}`)}
               >
                 <div className="flex items-center">
                   <svg
@@ -278,8 +276,8 @@ const DocumentList = ({ documents, folders, currentFolder }) => {
                     ? 'border-blue-500 bg-blue-50'
                     : ''
                 }`}
-                onClick={() => toggleItemSelection(doc._id, 'document')}
-                onDoubleClick={() => router.push(`/documents/${doc._id}`)}
+                // onClick={() => toggleItemSelection(doc._id, 'document')}
+                onClick={() => router.push(`/documents/${doc._id}`)}
               >
                 <div className="flex items-center mb-3">
                   <svg
